@@ -23,9 +23,11 @@ def urls():
 def pageNotFound(error):
     return render_template('errors/404.html'), 404
 
+
 @app.errorhandler(500)
-def pageNotFound(error):
+def internalServerError(error):
     return render_template('errors/500.html'), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)
