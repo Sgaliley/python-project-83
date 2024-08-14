@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="flex-grow-1">
+    <div class="container-lg mt-3">
+      <h1>Ошибка сервера</h1>
+
+    
+  <p>Извините за неудобства</p>
+  <p><a href="{{ url_for('index')}}">Вернуться на главную</a></p>
+
+    </div>
+  </main>
+{% endblock %}
