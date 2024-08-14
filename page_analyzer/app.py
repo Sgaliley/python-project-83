@@ -16,13 +16,16 @@ def index():
 
 @app.route('/urls', methods=["POST", "GET"])
 def urls():
-    return render_template('urls.html')
+    return render_template('urls/list.html')
 
 
 @app.errorhandler(404)
 def pageNotFound(error):
     return render_template('errors/404.html'), 404
 
+@app.errorhandler(500)
+def pageNotFound(error):
+    return render_template('errors/500.html'), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
