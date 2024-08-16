@@ -34,9 +34,11 @@ def add_url():
     try:
         with conn.cursor() as cur:
             cur.execute(
-                'INSERT INTO urls (name) VALUES (%s) \
-                ON CONFLICT (name) DO NOTHING RETURNING id', (normalized_url,)
-                )
+                'INSERT INTO urls (name) VALUES (%s) '
+                'ON CONFLICT (name) DO NOTHING '
+                'RETURNING id',
+                (normalized_url,)
+            )
             result = cur.fetchone()
 
             if result is not None:
