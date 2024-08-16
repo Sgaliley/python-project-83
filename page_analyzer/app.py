@@ -4,13 +4,14 @@ import os
 import psycopg2
 from urllib.parse import urlparse
 import validators
-from datetime import datetime
+
 
 load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 DATABASE_URL = os.getenv('DATABASE_URL')
 conn = psycopg2.connect(DATABASE_URL)
+
 
 @app.route('/index')
 @app.route('/')
@@ -32,19 +33,24 @@ def add_url():
 
     try:
         with conn.cursor() as cur:
-            cur.execute('INSERT INTO urls (name) VALUES (%s) ON CONFLICT (name) DO NOTHING RETURNING id', (normalized_url,))
+            cur.execute(
+                'INSERT INTO urls (name) VALUES (%s) \
+                ON CONFLICT (name) DO NOTHING RETURNING id', (normalized_url,)
+                )
             result = cur.fetchone()
-            
+
             if result is not None:
                 flash('Страница успешно добавлена', 'success')
                 url_id = result[0]
             else:
                 flash('Страница уже существует', 'info')
-                cur.execute('SELECT id FROM urls WHERE name = %s', (normalized_url,))
+                cur.execute(
+                    'SELECT id FROM urls WHERE name = %s', (normalized_url,)
+                    )
                 url_id = cur.fetchone()[0]
 
             conn.commit()
-    
+
             return redirect(url_for('show_url', id=url_id))
 
     except Exception as e:
@@ -55,7 +61,9 @@ def add_url():
 @app.route('/urls')
 def urls():
     with conn.cursor() as cur:
-        cur.execute('SELECT id, name, created_at::date FROM urls ORDER BY id DESC')
+        cur.execute(
+            'SELECT id, name, created_at::date FROM urls ORDER BY id DESC'
+            )
         urls = cur.fetchall()
 
     return render_template('urls/list.html', urls=urls)
@@ -64,7 +72,9 @@ def urls():
 @app.route('/urls/<int:id>')
 def show_url(id):
     with conn.cursor() as cur:
-        cur.execute('SELECT id, name, created_at::date FROM urls WHERE id = %s', (id,))
+        cur.execute(
+            'SELECT id, name, created_at::date FROM urls WHERE id = %s', (id,)
+            )
         url = cur.fetchone()
 
     if not url:
