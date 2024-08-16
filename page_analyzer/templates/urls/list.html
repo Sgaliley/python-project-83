@@ -18,23 +18,14 @@
   </tr>
   </thead>
   <tbody>
-    
-      <tr>
-        <td>1</td>
-        <td>
-          <a href="/urls/1">
-            http://google.com
-          </a>
-        </td>
-        
-        <td></td>
-        
-        
-        <td></td>
-        
-      </tr>
-    
-  </tbody>
+    {% for url in urls %}
+    <tr>
+        <td>{{ url[0] }}</td>
+        <td><a href="{{ url_for('show_url', id=url[0]) }}">{{ url[1] }}</a></td>
+        <td>{{ url[2] }}</td>
+    </tr>
+    {% endfor %}
+</tbody>
 </table>
 </div>
 

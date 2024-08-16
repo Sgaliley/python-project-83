@@ -4,7 +4,7 @@
 {{ super() }}
 <main class="flex-grow-1">
   <div class="container-lg mt-3">
-    <h1>Сайт: http://jut.su</h1>
+    <h1>Сайт: {{ url[1] }}</h1>
 
   
 <div class="table-responsive">
@@ -12,15 +12,15 @@
     <tbody>
       <tr>
         <td>ID</td>
-        <td>1</td>
+        <td>{{ url[0] }}</td>
       </tr>
       <tr>
         <td>Имя</td>
-        <td>http://jut.su</td>
+        <td>{{ url[1] }}</td>
       </tr>
       <tr>
         <td>Дата создания</td>
-        <td>2024-08-12</td>
+        <td>{{ url[2] }}</td>
       </tr>
     </tbody>
   </table>

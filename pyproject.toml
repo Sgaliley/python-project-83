@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "hexlet-code"
 version = "0.1.0"
-description = "Анализатор стран"
+description = "Анализатор страниц"
 authors = ["Сергей Миргалеев <saurit.galiley@yandex.ru>"]
 readme = "README.md"
 repository = "https://github.com/Sgaliley/python-project-83/"
@@ -19,6 +19,8 @@ flask = "^3.0.3"
 gunicorn = "^22.0.0"
 python-dotenv = "^1.0.1"
 flake8 = "^7.1.1"
+psycopg2-binary = "^2.9.9"
+validators = "^0.33.0"
 
 
 [build-system]
