@@ -166,14 +166,14 @@ def list_urls():
                     ''')
         urls = cur.fetchall()
 
-    urls_dict = [
-        {'id': url[0],
-         'name': url[1],
-         'last_check': url[2],
-         'last_status_code': url[3]}
-        for url in urls]
+    # urls_dict = [
+    #     {'id': url[0],
+    #      'name': url[1],
+    #      'last_check': url[2],
+    #      'last_status_code': url[3]}
+    #     for url in urls]
 
-    return render_template('urls/list.html', urls=urls_dict)
+    return render_template('urls/list.html', urls=urls)
 
 
 @app.errorhandler(404)

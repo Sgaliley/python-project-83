@@ -19,10 +19,10 @@
   <tbody>
     {% for url in urls %}
     <tr>
-      <td>{{ url.id }}</td>
-      <td><a href="{{ url_for('show_url', id=url.id) }}">{{ url.name }}</a></td>
-      <td>{{ url.last_check or '' }}</td>
-      <td>{{ url.last_status_code or '' }}</td>
+      <td>{{ url[0] }}</td>
+      <td><a href="{{ url_for('show_url', id=url[0]) }}">{{ url[1] }}</a></td>
+      <td>{{ url[2] or '' }}</td>
+      <td>{{ url[3] or '' }}</td>
     </tr>
     {% endfor %}
 </tbody>
