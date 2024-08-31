@@ -115,8 +115,8 @@ def create_check(id):
 
                 soup = BeautifulSoup(response.text, 'html.parser')
 
-                h1 = soup.h1.get_text(strip=True) if soup.h1 else ''
-                title = soup.title.get_text(strip=True) if soup.title else ''
+                h1 = soup.h1.get_text(strip=True) if soup.h1 else None
+                title = soup.title.get_text(strip=True) if soup.title else None
 
                 description = None
                 meta_desc = soup.find('meta', attrs={'name': 'description'})
