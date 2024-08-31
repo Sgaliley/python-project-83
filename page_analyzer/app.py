@@ -22,44 +22,44 @@ def index():
     return render_template('index.html')
 
 
-# @app.route('/urls', methods=["POST"])
-# def add_url():
-#     url = request.form['url'].strip().lower()
+@app.route('/urls', methods=["POST"])
+def add_url():
+    url = request.form['url'].strip().lower()
 
-#     if not validators.url(url):
-#         flash('Некорректный URL', 'danger')
-#         return redirect(url_for('index'))
+    if not validators.url(url):
+        flash('Некорректный URL', 'danger')
+        return redirect(url_for('index'))
 
-#     parsed_url = urlparse(url)
-#     normalized_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+    parsed_url = urlparse(url)
+    normalized_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
 
-#     try:
-#         with conn.cursor() as cur:
-#             cur.execute(
-#                 '''INSERT INTO urls (name) VALUES (%s)
-#                 ON CONFLICT (name) DO NOTHING
-#                 RETURNING id''',
-#                 (normalized_url,)
-#             )
-#             result = cur.fetchone()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                '''INSERT INTO urls (name) VALUES (%s)
+                ON CONFLICT (name) DO NOTHING
+                RETURNING id''',
+                (normalized_url,)
+            )
+            result = cur.fetchone()
 
-#             if result is not None:
-#                 flash('Страница успешно добавлена', 'success')
-#                 url_id = result[0]
-#             else:
-#                 flash('Страница уже существует', 'info')
-#                 cur.execute(
-#                     'SELECT id FROM urls WHERE name = %s', (normalized_url,)
-#                     )
-#                 url_id = cur.fetchone()[0]
+            if result is not None:
+                flash('Страница успешно добавлена', 'success')
+                url_id = result[0]
+            else:
+                flash('Страница уже существует', 'info')
+                cur.execute(
+                    'SELECT id FROM urls WHERE name = %s', (normalized_url,)
+                    )
+                url_id = cur.fetchone()[0]
 
-#             conn.commit()
+            conn.commit()
 
-#             return redirect(url_for('show_url', id=url_id))
+            return redirect(url_for('show_url', id=url_id))
 
-#     except Exception as e:
-#         flash(f'Error: {str(e)}', 'danger')
-#         return redirect(url_for('index'))
+    except Exception as e:
+        flash(f'Error: {str(e)}', 'danger')
+        return redirect(url_for('index'))
 
 
 # @app.route('/urls/<int:id>')
