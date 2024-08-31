@@ -113,15 +113,15 @@ def create_check(id):
                 response = requests.get(url, timeout=10)
                 response.raise_for_status()
 
-                soup = BeautifulSoup(response.text, 'html.parser')
+                # soup = BeautifulSoup(response.text, 'html.parser')
 
-                h1 = soup.h1.get_text(strip=True) if soup.h1 else None
-                title = soup.title.get_text(strip=True) if soup.title else None
+                # h1 = soup.h1.get_text(strip=True) if soup.h1 else None
+                # title = soup.title.get_text(strip=True) if soup.title else None
 
-                description = None
-                meta_desc = soup.find('meta', attrs={'name': 'description'})
-                if meta_desc and 'content' in meta_desc.attrs:
-                    description = meta_desc['content']
+                # description = None
+                # meta_desc = soup.find('meta', attrs={'name': 'description'})
+                # if meta_desc and 'content' in meta_desc.attrs:
+                #     description = meta_desc['content']
 
                 cur.execute('''
                     INSERT INTO url_checks (url_id,
