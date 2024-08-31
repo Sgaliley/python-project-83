@@ -64,24 +64,24 @@ def add_url():
 
 @app.route('/urls/<int:id>')
 def show_url(id):
-    # with conn.cursor() as cur:
-    #     cur.execute('''SELECT id,
-    #                 name,
-    #                 created_at::date
-    #                 FROM urls
-    #                 WHERE id = %s''', (id,))
-    #     url = cur.fetchone()
+    with conn.cursor() as cur:
+        cur.execute('''SELECT id,
+                    name,
+                    created_at::date
+                    FROM urls
+                    WHERE id = %s''', (id,))
+        url = cur.fetchone()
 
-    #     cur.execute('''SELECT id,
-    #                 status_code,
-    #                 h1,
-    #                 title,
-    #                 description,
-    #                 created_at::date
-    #                 FROM url_checks
-    #                 WHERE url_id = %s
-    #                 ORDER BY id DESC''', (id,))
-    #     checks = cur.fetchall()
+        # cur.execute('''SELECT id,
+        #             status_code,
+        #             h1,
+        #             title,
+        #             description,
+        #             created_at::date
+        #             FROM url_checks
+        #             WHERE url_id = %s
+        #             ORDER BY id DESC''', (id,))
+        # checks = cur.fetchall()
 
     if not url:
         flash('URL не найден.', 'danger')
