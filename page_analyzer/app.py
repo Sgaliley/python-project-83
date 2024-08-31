@@ -94,18 +94,17 @@ def show_url(id):
         return redirect(url_for('list_urls'))
 
     url_dict = {'id': url[0], 'name': url[1], 'created_at': url[2]}
-    # checks_dict = [
-    #     {'id': check[0],
-    #      'status_code': check[1],
-    #      'h1': check[2],
-    #      'title': check[3],
-    #      'description': check[4],
-    #      'created_at': check[5]} for check in checks]
+    checks_dict = {'id': checks[0][0],
+                   'status_code': checks[0][1],
+                   'h1': checks[0][2],
+                   'title': checks[0][3],
+                   'description': checks[0][4],
+                   'created_at': checks[0][5]}
 
     return render_template(
         'urls/detail.html',
         url=url_dict,
-        checks=checks)
+        checks=checks_dict)
 
 
 @app.route('/urls/<int:id>/checks', methods=['POST'])
