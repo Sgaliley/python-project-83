@@ -123,20 +123,20 @@ def create_check(id):
                 # if meta_desc and 'content' in meta_desc.attrs:
                 #     description = meta_desc['content']
 
-                cur.execute('''
-                    INSERT INTO url_checks (url_id,
-                    status_code,
-                    h1,
-                    title,
-                    description,
-                    created_at)
-                    VALUES (%s, %s, %s, %s, %s, %s)
-                ''', (id,
-                      response.status_code,
-                      h1,
-                      title,
-                      description,
-                      datetime.now()))
+                # cur.execute('''
+                #     INSERT INTO url_checks (url_id,
+                #     status_code,
+                #     h1,
+                #     title,
+                #     description,
+                #     created_at)
+                #     VALUES (%s, %s, %s, %s, %s, %s)
+                # ''', (id,
+                #       response.status_code,
+                #       h1,
+                #       title,
+                #       description,
+                #       datetime.now()))
 
                 conn.commit()
                 flash('Страница успешно проверена', 'success')
