@@ -104,47 +104,48 @@ def show_url(id):
 
 @app.route('/urls/<int:id>/checks', methods=['POST'])
 def create_check(id):
-    try:
-        with psycopg2.connect(DATABASE_URL) as conn:
-            with conn.cursor() as cur:
-                cur.execute('SELECT name FROM urls WHERE id = %s', (id,))
-                url = cur.fetchone()[0]
+    pass
+    # try:
+    #     with psycopg2.connect(DATABASE_URL) as conn:
+    #         with conn.cursor() as cur:
+    #             cur.execute('SELECT name FROM urls WHERE id = %s', (id,))
+    #             url = cur.fetchone()[0]
 
-                # response = requests.get(url, timeout=10)
-                # response.raise_for_status()
+    #             # response = requests.get(url, timeout=10)
+    #             # response.raise_for_status()
 
-                # soup = BeautifulSoup(response.text, 'html.parser')
+    #             # soup = BeautifulSoup(response.text, 'html.parser')
 
-                # h1 = soup.h1.get_text(strip=True) if soup.h1 else None
-                # title = soup.title.get_text(strip=True) if soup.title else None
+    #             # h1 = soup.h1.get_text(strip=True) if soup.h1 else None
+    #             # title = soup.title.get_text(strip=True) if soup.title else None
 
-                # description = None
-                # meta_desc = soup.find('meta', attrs={'name': 'description'})
-                # if meta_desc and 'content' in meta_desc.attrs:
-                #     description = meta_desc['content']
+    #             # description = None
+    #             # meta_desc = soup.find('meta', attrs={'name': 'description'})
+    #             # if meta_desc and 'content' in meta_desc.attrs:
+    #             #     description = meta_desc['content']
 
-                # cur.execute('''
-                #     INSERT INTO url_checks (url_id,
-                #     status_code,
-                #     h1,
-                #     title,
-                #     description,
-                #     created_at)
-                #     VALUES (%s, %s, %s, %s, %s, %s)
-                # ''', (id,
-                #       response.status_code,
-                #       h1,
-                #       title,
-                #       description,
-                #       datetime.now()))
+    #             # cur.execute('''
+    #             #     INSERT INTO url_checks (url_id,
+    #             #     status_code,
+    #             #     h1,
+    #             #     title,
+    #             #     description,
+    #             #     created_at)
+    #             #     VALUES (%s, %s, %s, %s, %s, %s)
+    #             # ''', (id,
+    #             #       response.status_code,
+    #             #       h1,
+    #             #       title,
+    #             #       description,
+    #             #       datetime.now()))
 
-                conn.commit()
-                flash('Страница успешно проверена', 'success')
+    #             conn.commit()
+    #             flash('Страница успешно проверена', 'success')
 
-    except Exception:
-        flash('Произошла ошибка при проверке', 'danger')
+    # except Exception:
+    #     flash('Произошла ошибка при проверке', 'danger')
 
-    return redirect(url_for('show_url', id=id))
+    # return redirect(url_for('show_url', id=id))
 
 
 @app.route('/urls')
