@@ -83,23 +83,23 @@ def show_url(id):
                     ORDER BY id DESC''', (id,))
         checks = cur.fetchall()
 
-    # if not url:
-    #     flash('URL не найден.', 'danger')
-    #     return redirect(url_for('list_urls'))
+    if not url:
+        flash('URL не найден.', 'danger')
+        return redirect(url_for('list_urls'))
 
-    url_dict = {'id': url[0], 'name': url[1], 'created_at': url[2]}
-    checks_dict = [
-        {'id': check[0],
-         'status_code': check[1],
-         'h1': check[2],
-         'title': check[3],
-         'description': check[4],
-         'created_at': check[5]} for check in checks]
+    # url_dict = {'id': url[0], 'name': url[1], 'created_at': url[2]}
+    # checks_dict = [
+    #     {'id': check[0],
+    #      'status_code': check[1],
+    #      'h1': check[2],
+    #      'title': check[3],
+    #      'description': check[4],
+    #      'created_at': check[5]} for check in checks]
 
     return render_template(
         'urls/detail.html',
-        url=url_dict,
-        checks=checks_dict)
+        url=url,
+        checks=checks)
 
 
 @app.route('/urls/<int:id>/checks', methods=['POST'])
