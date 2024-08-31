@@ -59,7 +59,7 @@ def add_url():
 
     except Exception as e:
         flash(f'Error: {str(e)}', 'danger')
-        return redirect(url_for('index')), 422
+        return redirect(url_for('index'))
 
 
 @app.route('/urls/<int:id>')
