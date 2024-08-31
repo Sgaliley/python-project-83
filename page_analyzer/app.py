@@ -147,41 +147,41 @@ def index():
 #     return redirect(url_for('show_url', id=id))
 
 
-# @app.route('/urls')
-# def list_urls():
-#     with conn.cursor() as cur:
-#         cur.execute('''
-#                     SELECT urls.id,
-#                            urls.name,
-#                            url_checks.created_at::date,
-#                            url_checks.status_code
-#                     FROM urls
-#                     LEFT JOIN (
-#                         SELECT DISTINCT ON (url_id) url_id,
-#                         status_code,
-#                         created_at
-#                         FROM url_checks AS last_check
-#                         ORDER BY url_id, created_at DESC
-#                             ) AS url_checks ON urls.id = url_checks.url_id
-#                     ORDER BY urls.created_at DESC;
-#                     ''')
-#         urls = cur.fetchall()
+@app.route('/urls')
+def list_urls():
+    with conn.cursor() as cur:
+        cur.execute('''
+                    SELECT urls.id,
+                           urls.name,
+                           url_checks.created_at::date,
+                           url_checks.status_code
+                    FROM urls
+                    LEFT JOIN (
+                        SELECT DISTINCT ON (url_id) url_id,
+                        status_code,
+                        created_at
+                        FROM url_checks AS last_check
+                        ORDER BY url_id, created_at DESC
+                            ) AS url_checks ON urls.id = url_checks.url_id
+                    ORDER BY urls.created_at DESC;
+                    ''')
+        urls = cur.fetchall()
 
-#     urls_dict = [
-#         {'id': url[0],
-#          'name': url[1],
-#          'last_check': url[2],
-#          'last_status_code': url[3]}
-#         for url in urls]
+    urls_dict = [
+        {'id': url[0],
+         'name': url[1],
+         'last_check': url[2],
+         'last_status_code': url[3]}
+        for url in urls]
 
-#     return render_template('urls/list.html', urls=urls_dict)
-
-
-# @app.errorhandler(404)
-# def pageNotFound(error):
-#     return render_template('errors/404.html'), 404
+    return render_template('urls/list.html', urls=urls_dict)
 
 
-# @app.errorhandler(500)
-# def internalServerError(error):
-#     return render_template('errors/500.html'), 500
+@app.errorhandler(404)
+def pageNotFound(error):
+    return render_template('errors/404.html'), 404
+
+
+@app.errorhandler(500)
+def internalServerError(error):
+    return render_template('errors/500.html'), 500
