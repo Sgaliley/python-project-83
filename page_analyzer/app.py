@@ -93,18 +93,18 @@ def show_url(id):
         flash('URL не найден.', 'danger')
         return redirect(url_for('list_urls'))
 
-    url_dict = {'id': url[0], 'name': url[1], 'created_at': url[2]}
-    checks_dict = {'id': checks[0][0],
-                   'status_code': checks[0][1],
-                   'h1': checks[0][2],
-                   'title': checks[0][3],
-                   'description': checks[0][4],
-                   'created_at': checks[0][5]}
+    # url_dict = {'id': url[0], 'name': url[1], 'created_at': url[2]}
+    # checks_dict = {'id': checks[0][0],
+    #                'status_code': checks[0][1],
+    #                'h1': checks[0][2],
+    #                'title': checks[0][3],
+    #                'description': checks[0][4],
+    #                'created_at': checks[0][5]}
 
     return render_template(
         'urls/detail.html',
-        url=url_dict,
-        checks=checks_dict)
+        url=url,
+        checks=checks)
 
 
 @app.route('/urls/<int:id>/checks', methods=['POST'])
