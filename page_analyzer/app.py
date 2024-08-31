@@ -71,6 +71,9 @@ def show_url(id):
                     FROM urls
                     WHERE id = %s''', (id,))
         url = cur.fetchone()
+        
+        print(f"URL данные: {url}")  # Отладочный вывод
+        print(f"URL данные: {url[0]}")
 
         cur.execute('''SELECT id,
                     status_code,
@@ -82,12 +85,15 @@ def show_url(id):
                     WHERE url_id = %s
                     ORDER BY id DESC''', (id,))
         checks = cur.fetchall()
+        
+        print(f"Checks данные: {checks}")  # Отладочный вывод
+        print(f"Checks данные: {checks[0][0]}")
 
     if not url:
         flash('URL не найден.', 'danger')
         return redirect(url_for('list_urls'))
 
-    # url_dict = {'id': url[0], 'name': url[1], 'created_at': url[2]}
+    url_dict = {'id': url[0], 'name': url[1], 'created_at': url[2]}
     # checks_dict = [
     #     {'id': check[0],
     #      'status_code': check[1],
@@ -98,7 +104,7 @@ def show_url(id):
 
     return render_template(
         'urls/detail.html',
-        url=url,
+        url=url_dict,
         checks=checks)
 
 
