@@ -62,44 +62,44 @@ def add_url():
         return redirect(url_for('index'))
 
 
-# @app.route('/urls/<int:id>')
-# def show_url(id):
-#     with conn.cursor() as cur:
-#         cur.execute('''SELECT id,
-#                     name,
-#                     created_at::date
-#                     FROM urls
-#                     WHERE id = %s''', (id,))
-#         url = cur.fetchone()
+@app.route('/urls/<int:id>')
+def show_url(id):
+    # with conn.cursor() as cur:
+    #     cur.execute('''SELECT id,
+    #                 name,
+    #                 created_at::date
+    #                 FROM urls
+    #                 WHERE id = %s''', (id,))
+    #     url = cur.fetchone()
 
-#         cur.execute('''SELECT id,
-#                     status_code,
-#                     h1,
-#                     title,
-#                     description,
-#                     created_at::date
-#                     FROM url_checks
-#                     WHERE url_id = %s
-#                     ORDER BY id DESC''', (id,))
-#         checks = cur.fetchall()
+    #     cur.execute('''SELECT id,
+    #                 status_code,
+    #                 h1,
+    #                 title,
+    #                 description,
+    #                 created_at::date
+    #                 FROM url_checks
+    #                 WHERE url_id = %s
+    #                 ORDER BY id DESC''', (id,))
+    #     checks = cur.fetchall()
 
-#     if not url:
-#         flash('URL не найден.', 'danger')
-#         return redirect(url_for('list_urls'))
+    if not url:
+        flash('URL не найден.', 'danger')
+        return redirect(url_for('list_urls'))
 
-#     url_dict = {'id': url[0], 'name': url[1], 'created_at': url[2]}
-#     checks_dict = [
-#         {'id': check[0],
-#          'status_code': check[1],
-#          'h1': check[2],
-#          'title': check[3],
-#          'description': check[4],
-#          'created_at': check[5]} for check in checks]
+    url_dict = {'id': url[0], 'name': url[1], 'created_at': url[2]}
+    checks_dict = [
+        {'id': check[0],
+         'status_code': check[1],
+         'h1': check[2],
+         'title': check[3],
+         'description': check[4],
+         'created_at': check[5]} for check in checks]
 
-#     return render_template(
-#         'urls/detail.html',
-#         url=url_dict,
-#         checks=checks_dict)
+    return render_template(
+        'urls/detail.html',
+        url=url_dict,
+        checks=checks_dict)
 
 
 @app.route('/urls/<int:id>/checks', methods=['POST'])
