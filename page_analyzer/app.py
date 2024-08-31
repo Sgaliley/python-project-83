@@ -16,10 +16,10 @@ DATABASE_URL = os.getenv('DATABASE_URL')
 conn = psycopg2.connect(DATABASE_URL)
 
 
-# @app.route('/index')
-# @app.route('/')
-# def index():
-#     return render_template('index.html')
+@app.route('/index')
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 
 # @app.route('/urls', methods=["POST"])
