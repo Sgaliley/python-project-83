@@ -67,7 +67,7 @@ def show_url(id):
     with conn.cursor() as cur:
         cur.execute('''SELECT id,
                     name,
-                    created_at::date
+                    created_at
                     FROM urls
                     WHERE id = %s''', (id,))
         url = cur.fetchone()
@@ -77,7 +77,7 @@ def show_url(id):
                     h1,
                     title,
                     description,
-                    created_at::date
+                    created_at
                     FROM url_checks
                     WHERE url_id = %s
                     ORDER BY id DESC''', (id,))
@@ -152,7 +152,7 @@ def list_urls():
         cur.execute('''
                     SELECT urls.id,
                            urls.name,
-                           url_checks.created_at::date,
+                           url_checks.created_at,
                            url_checks.status_code
                     FROM urls
                     LEFT JOIN (

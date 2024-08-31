@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS url_checks;
 CREATE TABLE IF NOT EXISTS urls (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at DATE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE url_checks (
@@ -14,5 +14,5 @@ CREATE TABLE url_checks (
     h1 TEXT,
     title TEXT,
     description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at DATE DEFAULT CURRENT_TIMESTAMP
 );
