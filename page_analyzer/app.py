@@ -110,8 +110,8 @@ def create_check(id):
                 cur.execute('SELECT name FROM urls WHERE id = %s', (id,))
                 url = cur.fetchone()[0]
 
-                response = requests.get(url, timeout=10)
-                response.raise_for_status()
+                # response = requests.get(url, timeout=10)
+                # response.raise_for_status()
 
                 # soup = BeautifulSoup(response.text, 'html.parser')
 
