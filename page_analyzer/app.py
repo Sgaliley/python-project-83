@@ -7,6 +7,8 @@ import validators
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
+from .data import (find_all_urls, find_by_id, find_by_name, find_checks,
+                   get_connected)
 
 
 load_dotenv()
@@ -104,48 +106,73 @@ def show_url(id):
 
 @app.route('/urls/<int:id>/checks', methods=['POST'])
 def create_check(id):
-    pass
     # try:
     #     with psycopg2.connect(DATABASE_URL) as conn:
     #         with conn.cursor() as cur:
     #             cur.execute('SELECT name FROM urls WHERE id = %s', (id,))
     #             url = cur.fetchone()[0]
 
-    #             # response = requests.get(url, timeout=10)
-    #             # response.raise_for_status()
+    #             response = requests.get(url)
+    #             response.raise_for_status()
 
-    #             # soup = BeautifulSoup(response.text, 'html.parser')
+    #             soup = BeautifulSoup(response.text, 'html.parser')
 
-    #             # h1 = soup.h1.get_text(strip=True) if soup.h1 else None
-    #             # title = soup.title.get_text(strip=True) if soup.title else None
+    #             h1 = soup.h1.get_text(strip=True) if soup.h1 else ''
+    #             title = soup.title.get_text(strip=True) if soup.title else ''
 
-    #             # description = None
-    #             # meta_desc = soup.find('meta', attrs={'name': 'description'})
-    #             # if meta_desc and 'content' in meta_desc.attrs:
-    #             #     description = meta_desc['content']
+    #             description = None
+    #             meta_desc = soup.find('meta', attrs={'name': 'description'})
+    #             if meta_desc and 'content' in meta_desc.attrs:
+    #                 description = meta_desc['content']
 
-    #             # cur.execute('''
-    #             #     INSERT INTO url_checks (url_id,
-    #             #     status_code,
-    #             #     h1,
-    #             #     title,
-    #             #     description,
-    #             #     created_at)
-    #             #     VALUES (%s, %s, %s, %s, %s, %s)
-    #             # ''', (id,
-    #             #       response.status_code,
-    #             #       h1,
-    #             #       title,
-    #             #       description,
-    #             #       datetime.now()))
+    #             cur.execute('''
+    #                 INSERT INTO url_checks (url_id,
+    #                 status_code,
+    #                 h1,
+    #                 title,
+    #                 description,
+    #                 created_at)
+    #                 VALUES (%s, %s, %s, %s, %s, %s)
+    #             ''', (id,
+    #                   response.status_code,
+    #                   h1,
+    #                   title,
+    #                   description,
+    #                   datetime.now()))
 
     #             conn.commit()
     #             flash('Страница успешно проверена', 'success')
 
     # except Exception:
     #     flash('Произошла ошибка при проверке', 'danger')
+    url = find_by_id(id)
 
-    # return redirect(url_for('show_url', id=id))
+    try:
+        with requests.get(url.name) as response:
+            status_code = response.status_code
+            response.raise_for_status()
+
+    except requests.exceptions.RequestException:
+        flash('Произошла ошибка при проверке', 'alert-danger')
+        return render_template('detail.html', ID=id, name=url.name,
+                               created_at=url.created_at,
+                               checks=find_checks(id)), 422
+
+    h1, title, description = get_seo_data(
+        BeautifulSoup(response.text, 'html.parser')
+    )
+
+    with get_connected() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("INSERT INTO url_checks (url_id, status_code,\
+                           h1, title, description, created_at)\
+                           VALUES (%s, %s, %s, %s, %s, %s)",
+                           (id, status_code, h1,
+                            title, description,
+                            datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+            flash('Страница успешно проверена', 'alert-success')
+
+    return redirect(url_for('show_url', id=id))
 
 
 @app.route('/urls')
