@@ -72,20 +72,20 @@ def show_url(id):
                     WHERE id = %s''', (id,))
         url = cur.fetchone()
 
-        # cur.execute('''SELECT id,
-        #             status_code,
-        #             h1,
-        #             title,
-        #             description,
-        #             created_at::date
-        #             FROM url_checks
-        #             WHERE url_id = %s
-        #             ORDER BY id DESC''', (id,))
-        # checks = cur.fetchall()
+        cur.execute('''SELECT id,
+                    status_code,
+                    h1,
+                    title,
+                    description,
+                    created_at::date
+                    FROM url_checks
+                    WHERE url_id = %s
+                    ORDER BY id DESC''', (id,))
+        checks = cur.fetchall()
 
-    if not url:
-        flash('URL не найден.', 'danger')
-        return redirect(url_for('list_urls'))
+    # if not url:
+    #     flash('URL не найден.', 'danger')
+    #     return redirect(url_for('list_urls'))
 
     url_dict = {'id': url[0], 'name': url[1], 'created_at': url[2]}
     checks_dict = [
