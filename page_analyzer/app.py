@@ -55,7 +55,8 @@ def add_url():
                 else:
                     flash('Страница уже существует', 'info')
                     cur.execute(
-                        'SELECT id FROM urls WHERE name = %s', (normalized_url,)
+                        '''SELECT id FROM urls
+                        WHERE name = %s''', (normalized_url,)
                     )
                     url_id = cur.fetchone()['id']
 
@@ -74,7 +75,9 @@ def show_url(id):
         with get_db_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(
-                    'SELECT id, name, created_at FROM urls WHERE id = %s', (id,)
+                    '''SELECT id, name, created_at
+                    FROM urls
+                    WHERE id = %s''', (id,)
                 )
                 url = cur.fetchone()
 
@@ -83,8 +86,14 @@ def show_url(id):
                     return redirect(url_for('list_urls'))
 
                 cur.execute(
-                    '''SELECT id, status_code, h1, title, description, created_at
-                    FROM url_checks WHERE url_id = %s ORDER BY id DESC''', (id,)
+                    '''SELECT id,
+                    status_code,
+                    h1,
+                    title,
+                    description,
+                    created_at
+                    FROM url_checks
+                    WHERE url_id = %s ORDER BY id DESC''', (id,)
                 )
                 checks = cur.fetchall()
 
@@ -101,7 +110,8 @@ def create_check(id):
         with get_db_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute('SELECT name FROM urls WHERE id = %s', (id,))
-                url = cur.fetchone()['name']
+                url_row = cur.fetchone()
+                url = url_row['name'] if url_row else None
 
                 response = requests.get(url)
                 response.raise_for_status()
@@ -116,9 +126,21 @@ def create_check(id):
                     description = meta_desc['content']
 
                 cur.execute(
-                    '''INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at)
+                    '''INSERT INTO url_checks (
+                        url_id,
+                        status_code,
+                        h1,
+                        title,
+                        description,
+                        created_at
+                        )
                     VALUES (%s, %s, %s, %s, %s, %s)''',
-                    (id, response.status_code, h1, title, description, datetime.now())
+                    (id,
+                     response.status_code,
+                     h1,
+                     title,
+                     description,
+                     datetime.now())
                 )
 
                 conn.commit()
