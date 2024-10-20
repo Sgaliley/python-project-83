@@ -146,10 +146,10 @@ def create_check(id):
                 conn.commit()
                 flash('Страница успешно проверена', 'success')
 
-    except requests.RequestException as e:
-        flash(f'Произошла ошибка при проверке', 'danger')
-    except Exception as e:
-        flash(f'Ошибка проверки страницы: {str(e)}', 'danger')
+    except requests.RequestException:
+        flash('Произошла ошибка при проверке', 'danger')
+    except Exception:
+        flash('Ошибка проверки страницы', 'danger')
 
     return redirect(url_for('show_url', id=id))
 
