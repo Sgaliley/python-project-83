@@ -21,8 +21,8 @@
     <tr>
       <td>{{ url.id }}</td>
       <td><a href="/urls/{{ url.id }}">{{ url.name }}</a></td>
-      <td>{{ url.created_at }}</td>
-      <td>{{ url.status_code }}</td>
+      <td>{{ url.created_at else ''}}</td>
+      <td>{{ url.status_codeсelse '' }}</td>
     </tr>
     {% endfor %}
 </tbody>

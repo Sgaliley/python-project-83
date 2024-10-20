@@ -111,7 +111,7 @@ def create_check(id):
             with conn.cursor() as cur:
                 cur.execute('SELECT name FROM urls WHERE id = %s', (id,))
                 url_row = cur.fetchone()
-                url = url_row['name'] if url_row else None
+                url = url_row['name'] if url_row else ''
 
                 response = requests.get(url)
                 response.raise_for_status()
