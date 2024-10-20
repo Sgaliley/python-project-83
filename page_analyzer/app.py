@@ -147,7 +147,7 @@ def create_check(id):
                 flash('Страница успешно проверена', 'success')
 
     except requests.RequestException as e:
-        flash(f'Ошибка запроса: {str(e)}', 'danger')
+        flash(f'Произошла ошибка при проверке', 'danger')
     except Exception as e:
         flash(f'Ошибка проверки страницы: {str(e)}', 'danger')
 
