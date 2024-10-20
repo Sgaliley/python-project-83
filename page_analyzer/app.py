@@ -33,7 +33,7 @@ def add_url():
 
     if not validators.url(url):
         flash('Некорректный URL', 'danger')
-        return redirect(url_for('index'))
+        return render_template('index.html'), 422
 
     parsed_url = urlparse(url)
     normalized_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
