@@ -24,14 +24,16 @@ def add_url(conn, url: str) -> int:
 
         if result:
             url_id = result['id']
+            inserted = True
         else:
             cur.execute(
                 '''SELECT id FROM urls
                 WHERE name = %s''', (url,)
             )
             url_id = cur.fetchone()['id']
+            inserted = False
 
-    return url_id
+    return url_id, inserted
 
 
 def get_url_by_id(conn, id: int) -> dict:

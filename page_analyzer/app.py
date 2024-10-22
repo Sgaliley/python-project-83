@@ -33,10 +33,10 @@ def add_url_route():
 
     try:
         with get_db_connection() as conn:
-            url_id = add_url(conn, normalized_url)
+            url_id, inserted = add_url(conn, normalized_url)
             conn.commit()
 
-            if url_id:
+            if inserted:
                 flash('Страница успешно добавлена', 'success')
             else:
                 flash('Страница уже существует', 'info')
