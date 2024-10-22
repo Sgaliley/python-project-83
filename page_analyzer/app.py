@@ -1,24 +1,18 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-from dotenv import load_dotenv
-import os
-import psycopg2
-from psycopg2.extras import RealDictCursor
-from urllib.parse import urlparse
+from .config import SECRET_KEY
+from .db import (get_db_connection,
+                 add_url,
+                 get_url_by_id,
+                 get_url_checks_by_id,
+                 add_url_check,
+                 get_all_urls_with_latest_check)
+from .services import normalize_url, fetch_page_data
 import validators
 from datetime import datetime
-import requests
-from bs4 import BeautifulSoup
 
 
-load_dotenv()
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-DATABASE_URL = os.getenv('DATABASE_URL')
-
-
-def get_db_connection():
-    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
-    return conn
+app.config['SECRET_KEY'] = SECRET_KEY
 
 
 @app.route('/index')
@@ -28,41 +22,26 @@ def index():
 
 
 @app.route('/urls', methods=["POST"])
-def add_url():
+def add_url_route():
     url = request.form['url'].strip().lower()
 
     if not validators.url(url):
         flash('Некорректный URL', 'danger')
         return render_template('index.html'), 422
 
-    parsed_url = urlparse(url)
-    normalized_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+    normalized_url = normalize_url(url)
 
     try:
         with get_db_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    '''INSERT INTO urls (name) VALUES (%s)
-                    ON CONFLICT (name) DO NOTHING
-                    RETURNING id''',
-                    (normalized_url,)
-                )
-                result = cur.fetchone()
+            url_id = add_url(conn, normalized_url)
+            conn.commit()
 
-                if result:
-                    flash('Страница успешно добавлена', 'success')
-                    url_id = result['id']
-                else:
-                    flash('Страница уже существует', 'info')
-                    cur.execute(
-                        '''SELECT id FROM urls
-                        WHERE name = %s''', (normalized_url,)
-                    )
-                    url_id = cur.fetchone()['id']
+            if url_id:
+                flash('Страница успешно добавлена', 'success')
+            else:
+                flash('Страница уже существует', 'info')
 
-                conn.commit()
-
-            return redirect(url_for('show_url', id=url_id))
+        return redirect(url_for('show_url', id=url_id))
 
     except Exception as e:
         flash(f'Ошибка при добавлении страницы: {str(e)}', 'danger')
@@ -73,29 +52,13 @@ def add_url():
 def show_url(id):
     try:
         with get_db_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    '''SELECT id, name, created_at
-                    FROM urls
-                    WHERE id = %s''', (id,)
-                )
-                url = cur.fetchone()
+            url = get_url_by_id(conn, id)
 
-                if not url:
-                    flash('URL не найден', 'danger')
-                    return redirect(url_for('list_urls'))
+            if not url:
+                flash('URL не найден', 'danger')
+                return redirect(url_for('list_urls'))
 
-                cur.execute(
-                    '''SELECT id,
-                    status_code,
-                    h1,
-                    title,
-                    description,
-                    created_at
-                    FROM url_checks
-                    WHERE url_id = %s ORDER BY id DESC''', (id,)
-                )
-                checks = cur.fetchall()
+            checks = get_url_checks_by_id(conn, id)
 
         return render_template('urls/detail.html', url=url, checks=checks)
 
@@ -113,43 +76,19 @@ def create_check(id):
                 url_row = cur.fetchone()
                 url = url_row['name'] if url_row else ''
 
-                response = requests.get(url)
-                response.raise_for_status()
+                if not url:
+                    flash('URL не найден', 'danger')
+                    return redirect(url_for('list_urls'))
 
-                soup = BeautifulSoup(response.text, 'html.parser')
+                page_data = fetch_page_data(url)
+                page_data['created_at'] = datetime.now()
 
-                h1 = soup.h1.get_text(strip=True) if soup.h1 else ''
-                title = soup.title.get_text(strip=True) if soup.title else ''
-                description = None
-                meta_desc = soup.find('meta', attrs={'name': 'description'})
-                if meta_desc and 'content' in meta_desc.attrs:
-                    description = meta_desc['content']
-
-                cur.execute(
-                    '''INSERT INTO url_checks (
-                        url_id,
-                        status_code,
-                        h1,
-                        title,
-                        description,
-                        created_at
-                        )
-                    VALUES (%s, %s, %s, %s, %s, %s)''',
-                    (id,
-                     response.status_code,
-                     h1,
-                     title,
-                     description,
-                     datetime.now())
-                )
-
+                add_url_check(conn, id, page_data)
                 conn.commit()
                 flash('Страница успешно проверена', 'success')
 
-    except requests.RequestException:
-        flash('Произошла ошибка при проверке', 'danger')
     except Exception:
-        flash('Ошибка проверки страницы', 'danger')
+        flash('Произошла ошибка при проверке', 'danger')
 
     return redirect(url_for('show_url', id=id))
 
@@ -158,23 +97,7 @@ def create_check(id):
 def list_urls():
     try:
         with get_db_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute('''
-                    SELECT urls.id,
-                           urls.name,
-                           url_checks.created_at,
-                           url_checks.status_code
-                    FROM urls
-                    LEFT JOIN (
-                        SELECT DISTINCT ON (url_id) url_id,
-                               status_code,
-                               created_at
-                        FROM url_checks
-                        ORDER BY url_id, created_at DESC
-                    ) AS url_checks ON urls.id = url_checks.url_id
-                    ORDER BY urls.created_at DESC;
-                ''')
-                urls = cur.fetchall()
+            urls = get_all_urls_with_latest_check(conn)
 
         return render_template('urls/list.html', urls=urls)
 
