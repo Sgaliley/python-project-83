@@ -4,11 +4,10 @@ from .db import (get_db_connection,
                  add_url,
                  get_url_by_id,
                  get_url_checks_by_id,
-                 add_url_check,
+                 get_url_and_add_check,
                  get_all_urls_with_latest_check)
-from .services import normalize_url, fetch_page_data
+from .services import normalize_url
 import validators
-from datetime import datetime
 
 
 app = Flask(__name__)
@@ -43,8 +42,8 @@ def add_url_route():
 
         return redirect(url_for('show_url', id=url_id))
 
-    except Exception as e:
-        flash(f'Ошибка при добавлении страницы: {str(e)}', 'danger')
+    except Exception:
+        flash('Произошла ошибка. Попробуйте позже.', 'danger')
         return redirect(url_for('index'))
 
 
@@ -62,8 +61,8 @@ def show_url(id):
 
         return render_template('urls/detail.html', url=url, checks=checks)
 
-    except Exception as e:
-        flash(f'Ошибка при загрузке данных: {str(e)}', 'danger')
+    except Exception:
+        flash('Ошибка при загрузке данных', 'danger')
         return redirect(url_for('list_urls'))
 
 
@@ -71,21 +70,12 @@ def show_url(id):
 def create_check(id):
     try:
         with get_db_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute('SELECT name FROM urls WHERE id = %s', (id,))
-                url_row = cur.fetchone()
-                url = url_row['name'] if url_row else ''
+            result = get_url_and_add_check(conn, id)
+            if not result:
+                flash('URL не найден', 'danger')
+                return redirect(url_for('list_urls'))
 
-                if not url:
-                    flash('URL не найден', 'danger')
-                    return redirect(url_for('list_urls'))
-
-                page_data = fetch_page_data(url)
-                page_data['created_at'] = datetime.now()
-
-                add_url_check(conn, id, page_data)
-                conn.commit()
-                flash('Страница успешно проверена', 'success')
+            flash('Страница успешно проверена', 'success')
 
     except Exception:
         flash('Произошла ошибка при проверке', 'danger')

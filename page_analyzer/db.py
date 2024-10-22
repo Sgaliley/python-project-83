@@ -1,17 +1,19 @@
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from .config import DATABASE_URL
+from .services import fetch_page_data
+from datetime import datetime
 
 
 def get_db_connection():
-    '''Соединение с базой данных.'''
+    '''Database connection.'''
     conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     return conn
 
 
-def add_url(conn, url: str) -> int:
+def add_url(conn, url: str) -> (int, bool):
     '''
-    Добавляет URL в базу данных, если он еще не существует.
+    Adds the URL to the database if it does not already exist.
     '''
     with conn.cursor() as cur:
         cur.execute(
@@ -53,7 +55,7 @@ def get_url_by_id(conn, id: int) -> dict:
 
 def get_url_checks_by_id(conn, id: int) -> list:
     '''
-    Получает список проверок для URL по его ID.
+    Gets information about a URL by its ID.
     '''
     with conn.cursor() as cur:
         cur.execute(
@@ -73,7 +75,7 @@ def get_url_checks_by_id(conn, id: int) -> list:
 
 def add_url_check(conn, url_id: int, check_data: dict):
     '''
-    Добавляет проверку для URL в базу данных.
+    Adds validation for the URL to the database.
     '''
     with conn.cursor() as cur:
         cur.execute(
@@ -96,7 +98,7 @@ def add_url_check(conn, url_id: int, check_data: dict):
 
 def get_all_urls_with_latest_check(conn) -> list:
     '''
-    Получает список всех URL с последней проверкой.
+    Gets a list of all URLs with the last validation.
     '''
     with conn.cursor() as cur:
         cur.execute('''
@@ -117,3 +119,23 @@ def get_all_urls_with_latest_check(conn) -> list:
         urls = cur.fetchall()
 
     return urls
+
+
+def get_url_and_add_check(conn, id: int) -> dict:
+    '''
+    Получает URL по ID и добавляет проверку страницы.
+    '''
+    with conn.cursor() as cur:
+        cur.execute('SELECT name FROM urls WHERE id = %s', (id,))
+        url_row = cur.fetchone()
+        if not url_row:
+            return None
+
+        url = url_row['name']
+        page_data = fetch_page_data(url)
+        page_data['created_at'] = datetime.now()
+
+        add_url_check(conn, id, page_data)
+        conn.commit()
+
+    return page_data
